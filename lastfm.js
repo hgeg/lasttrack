@@ -12,7 +12,7 @@ var eqimg = "data:image/gif;base64,R0lGODlhDAAMALMAAP///9bW1s7Ozr29vbW1ta2traWlp
 function getLastFMData(user,res) {
   console.log('getting last.fm data');
   res.writeHead(200, {'Content-Type': 'text/html','Access-Control-Allow-Origin':'*'});
-  requrl = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user='+user+'&api_key=59fb3f19e8b0666ec80b6284b055ac9e&format=json&limit=1';
+  requrl = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user='+user+'&api_key=xxxxxxxxxxxxxxxxx&format=json&limit=1';
   request(requrl,
       function(e,r,b){
        try{
@@ -37,7 +37,7 @@ function getLastFMData(user,res) {
 function getArtworkURL(query,res) {
   console.log('getting last.fm data');
   res.writeHead(200, {'Content-Type': 'text/html','Access-Control-Allow-Origin':'*'});
-  requrl = 'http://ws.audioscrobbler.com/2.0/?method=track.search&track='+query.replace(/ /g,'+')+'&api_key=59fb3f19e8b0666ec80b6284b055ac9e&format=json&limit=1';
+  requrl = 'http://ws.audioscrobbler.com/2.0/?method=track.search&track='+query.replace(/ /g,'+')+'&api_key=xxxxxxxxxxxxxxxxx&format=json&limit=1';
   request(requrl,
       function(e,r,b){
        try{
@@ -63,5 +63,5 @@ http.createServer(function (req, res) {
   }else{
     res.end('Key "user" not found in request.');
   }
-}).listen(8431,'10.211.42.119');
-console.log('Server running at http://52.235.72.44:8431/');
+}).listen(8431,'127.0.0.1');
+console.log('Server running at http://127.0.0.1:8431/');
