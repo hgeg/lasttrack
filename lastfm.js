@@ -10,28 +10,25 @@ var lastfmLogo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf
 var eqimg = "data:image/gif;base64,R0lGODlhDAAMALMAAP///9bW1s7Ozr29vbW1ta2traWlpZycnJSUlIyMjAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQEBQD/ACwAAAAADAAMAAAEORAEQisNQJRdKDeCIXKbKB7oYQBAiiIwcrAxnCB0DiR8wvq7X+9H3A2DSB6ix+whBs3mADBYNp+ACAAh+QQEBQD/ACwAAAAADAAMAAAEOBAEQisNQJRdKDeCIXKbKB7oYaYoggDAAbt08gJ3nexw0vc7H0BIDP6GQERwGUQMmMwBYKBkOgERACH5BAQFAP8ALAAAAAAMAAwAAAQ3EARCKw1AlF0oN4IhcpsoHuhhAECKIjBysDGc1LSd7GzS70AfQEgE9o7DW3B5GzCDA8AAwUREIwAh+QQEBQD/ACwAAAAADAAMAAAEOBAEQisNQJRdKDeCIW4AUIjioR5GuapIjBylHCd2XSZ8n+y7HhDwIwqJQx7Cx8QNmr4BYLBkIqQRACH5BAQFAP8ALAAAAAAMAAwAAAQ4EARCKw1AlF0oN4IhcpsoHuhhAECKIjBysDGc1LSd7GzS9zsfQEgM/oZARHAZRAyYzAFgoGQ6AREAIfkEBAUA/wAsAAAAAAwADAAABDgQBEIrDUCUXSg3giFymyge6GGmKOIiBwC8boLI91wnvJz4vOAPMCwGfUiiTci0DZrCAWCAaCKkEQAh+QQEBQD/ACwAAAAADAAMAAAENxAEQisNQJRdKDeCIXKbKB7oYaYoggBA6s7JC9h0osMJz+s9QHAI9Al/CKASiBgslwPAILlsAiIAIfkEBAUA/wAsAAAAAAwADAAABDYQBEIrDUCUXSg3giFymygeBwCYaIsgqqu+CQy8r5rsie4DvB7wFyTqasFkbaAMDgADhBLxjAAAIfkEBAUA/wAsAAAAAAwADAAABDcQBEIrDUCUXSg3giFymyge6GGmKIIAQOrOyQvMdKLDCc/rPUBwCPQJfwigEogYLJcDwCC5bAIiACH5BAQFAP8ALAAAAAAMAAwAAAQ3EARCKw1AlF0oN4IhcpsoHuhhpiiCAEDqzskL2HaiJzAP+Dtgr7cb/oiIoLI2WAYHgEFSiYBGAAAh+QQEBQD/ACwAAAAADAAMAAAENxAEQisNQJRdKDeCIXKbKB7oYaYo4iIHALxuQstvoicyD/g7YK+3G/6IiKDSNlgGB4BBUomARgAAOw==";
 
 function getLastFMData(user,res) {
-  console.log('getting last.fm data');
   res.writeHead(200, {'Content-Type': 'text/html','Access-Control-Allow-Origin':'*'});
-  requrl = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user='+user+'&api_key=xxxxxxxxxxxxxxxxx&format=json&limit=1';
-  request(requrl,
-      function(e,r,b){
-       try{
-        var laststatus,lasttime,lasttrack;
-        data = JSON.parse(b);
-        var recent = [].concat(data.recenttracks.track)[0];
-   	if("@attr" in recent && recent["@attr"]["nowplaying"]=="true"){
-   	        laststatus = ' is listening:';
-   		lasttime = 'right now  <img src="'+eqimg+'"></img>';
-   	}else{
-   		laststatus = "'s last track:";
-   		lasttime = " " + timeago(new Date(parseInt(recent["date"]["uts"])*1000));
-   	}
-	lasttrack = recent.artist['#text'] + ' - ' + recent.name;
-        html = '<p class="view"><img src="'+lastfmLogo+'"> </img>  <a hred="http://last.fm/user/'+user+'">'+user+'</a><span id="laststatus">'+laststatus+'</span><br><span class="last-track" id="lasttrack">'+lasttrack+'</span> <span class="last-time" id="lasttime">'+lasttime+'</span></p>';
+  requrl = 'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user='+user+'&api_key=59fb3f19e8b0666ec80b6284b055ac9e&format=json&limit=1';
+  request(requrl, function(e,r,b){
+    try{
+      var laststatus,lasttime,lasttrack;
+      data = JSON.parse(b);
+      var recent = [].concat(data.recenttracks.track)[0];
+        if("@attr" in recent && recent["@attr"]["nowplaying"]=="true"){
+                laststatus = ' is listening:';
+            lasttime = 'right now  <img src="'+eqimg+'"></img>';
+        }else{
+            laststatus = "'s last track:";
+            lasttime = " " + timeago(new Date(parseInt(recent["date"]["uts"])*1000));
+        }
+        lasttrack = recent.artist['#text'] + ' - ' + recent.name;
+            html = '<p class="view"><img src="'+lastfmLogo+'"> </img>  <a hred="http://last.fm/user/'+user+'">'+user+'</a><span id="laststatus">'+laststatus+'</span><br><span class="last-track" id="lasttrack">'+lasttrack+'</span> <span class="last-time" id="lasttime">'+lasttime+'</span></p>';
         res.end(html);
-       }catch(err){res.end('<p class="error">Error: User "'+user+'" not found!</p>');}
-    }
-  );
+    }catch(err){res.end('<p class="error">Error: User "'+user+'" not found!</p>');} 
+  });
 }
 
 function getArtworkURL(query,res) {
@@ -56,7 +53,7 @@ http.createServer(function (req, res) {
   console.log(query)
   res.writeHead(200, {'Content-Type': 'text/html'});
   if('user' in query){
-     request('http://nightbla.de/appcounter/add/'+req.connection.remoteAddress+'/lastTrack/');
+     //request('http://nightbla.de/appcounter/add/'+req.connection.remoteAddress+'/lastTrack/');
     getLastFMData(query['user'],res);
   }else if('artwork' in query){
     getArtworkURL(query['artwork'],res);
